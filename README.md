@@ -1,11 +1,53 @@
-<div align="center">
+# 拼豆图纸生成系统 (Perler Beads Pattern Generator)
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+这是一个基于 Web 的拼豆图纸生成系统，支持自定义尺寸、降采样算法和色号匹配。
 
-  <h1>Built with AI Studio</h2>
+## 颜色匹配算法说明 (Color Matching Algorithm)
+本项目在进行颜色匹配时，**没有**使用简单的 RGB 欧氏距离。而是将 RGB 颜色转换为 **CIE LAB 色彩空间**，然后计算两个颜色在 LAB 空间中的色差 (Delta E)。
+CIE LAB 色彩空间是基于人类视觉感知设计的，因此使用 Delta E 计算出的最接近颜色，在人类肉眼看来也是最相似的，这对于拼豆这种实体颜色的匹配至关重要。
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## 版本日志 (Changelog)
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+### v1.1.0 (当前版本)
+**修改目标**：
+1. 在生成的图片下方增加色号使用统计（包含颜色方块和数量，横向排列）。
+2. 增加适量的页边距，使图纸排版更美观。
+3. 增加“梯度增强”算法：在区域平均的基础上，增强颜色分界线的对比度，使边缘更锐利。
+4. 增加 README 文件，记录详细的版本日志。
+5. 增加粗线辅助：每 10 格加粗一条辅助线，10、20、30 等坐标数字放大并加粗。
+6. 增加快捷尺寸按钮：18x18（小挂件）、36x36、52x52（标准）、72x72。
+7. 增加亮度调节功能（-2 到 +2 档微调）。
+8. 界面增加中英文对照。
+9. 优化梯度增强算法：弱化边缘增强的程度，并在颜色变化较小（平坦）的区域保持颜色一致性，避免产生噪点。
 
-</div>
+**修改的文件和内容**：
+- `README.md`：新建文件，添加项目说明、颜色匹配算法说明和版本日志。
+- `src/core/generator.ts`：
+  - 增加 `gradient_enhanced` 算法类型。
+  - 实现梯度增强逻辑：计算局部梯度，对平坦区域保持原色，对边缘区域应用较弱的 Unsharp Masking。
+  - 增加 `brightness` 亮度调节参数，在读取像素时进行微调。
+- `src/core/draw_utils.ts`：
+  - 修改 `drawPattern` 函数，增加对使用色号的统计逻辑。
+  - 在图纸底部横向排列绘制色号方块及对应的使用数量（如 `[H11] * 250`）。
+  - 调整四周的 `margin`，留出更宽裕的页边距。
+  - 增加每 10 格的粗网格线绘制逻辑。
+  - 坐标数字逢 10 放大并加粗。
+- `src/App.tsx`：
+  - 在算法选择下拉菜单中增加“梯度增强 (Gradient Enhanced)”选项。
+  - 增加快捷尺寸按钮。
+  - 增加亮度调节滑块。
+  - 界面文本更新为中英文对照。
+
+### v1.0.1
+**修改目标**：引入真实的拼豆色卡数据，并支持按品牌色系选择。
+**修改的文件和内容**：
+- `src/core/palette_data.ts`：新增文件，存入真实的 CSV 格式色卡数据。
+- `src/core/color_utils.ts`：解析 `palette_data.ts`，支持 `mard`, `漫漫`, `盼盼`, `咪小窝`, `COCO`, `卡卡` 等品牌色系。
+- `src/App.tsx`：更新色系选择下拉菜单，默认使用 `mard` 色卡。
+
+### v1.0.0
+**修改目标**：初始版本发布。
+**修改的文件和内容**：
+- 搭建基础的 React + Vite + Tailwind CSS 框架。
+- 实现图片上传、尺寸设置、算法选择（平均、临近）。
+- 实现 CIE LAB 色差计算和基础图纸渲染（带坐标和网格）。
