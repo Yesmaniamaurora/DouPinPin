@@ -131,11 +131,11 @@ export class PerlerBeadGenerator {
               row.push({ ...center });
             } else {
               // Weaker unsharp masking for edges
-              //  0 -0.3  0
-              // -0.3  2.2 -0.3
-              //  0 -0.3  0
-              const weightCenter = 2.2;
-              const weightEdge = -0.3;
+              //  0 -0.1  0
+              // -0.1  2 -0.1
+              //  0 -0.1  0
+              const weightCenter = 2;
+              const weightEdge = -0.1;
               
               let sumR = center.r * weightCenter;
               let sumG = center.g * weightCenter;
